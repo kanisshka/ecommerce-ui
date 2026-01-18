@@ -4,5 +4,6 @@ export const coupons: any[] = [];
 
 export const state = {
   orderCount: 0,
+    nthOrder: 2,
 };
-export const NTH_ORDER = 3;
+

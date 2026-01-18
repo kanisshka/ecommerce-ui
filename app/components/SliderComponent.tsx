@@ -1,4 +1,5 @@
 import { Minus, Plus, ShoppingCart, Tag, Trash2, X } from "lucide-react";
+import { useState } from "react";
 interface CartItem {
   productId: number;
   name: string;
@@ -15,8 +16,42 @@ const CartSidebar: React.FC<{
   onUpdateQuantity: (productId: number, quantity: number) => void;
   onRemoveItem: (productId: number) => void;
 }> = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveItem }) => {
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
   const total = subtotal;
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponError, setCouponError] = useState("");
+
+  const handleCheckout = async () => {
+    const payload = {
+      userId: "u1",
+      couponCode: appliedCoupon,
+    };
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      console.log(data, "data");
+      alert(`Order placed! Final amount: ₹${data.finalAmount}`);
+
+      if (data.newCoupon) {
+        alert(`🎉 You got a new coupon: ${data.newCoupon}`);
+      }
+
+      onClose(); // close sidebar
+    } catch (error) {
+      alert("Checkout failed");
+    }
+  };
 
   return (
     <>
@@ -31,7 +66,7 @@ const CartSidebar: React.FC<{
       {/* Sidebar */}
       <div
         className={`fixed top-0 right-0 h-full w-full sm:w-[450px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+          isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
@@ -40,8 +75,12 @@ const CartSidebar: React.FC<{
             <div className="flex items-center gap-3">
               <ShoppingCart size={24} className="text-black" />
               <div>
-                <h2 className="text-2xl font-black text-gray-900">Shopping Cart</h2>
-                <p className="text-sm text-gray-500">{cartItems.length} items</p>
+                <h2 className="text-2xl font-black text-gray-900">
+                  Shopping Cart
+                </h2>
+                <p className="text-sm text-gray-500">
+                  {cartItems.length} items
+                </p>
               </div>
             </div>
             <button
@@ -57,8 +96,12 @@ const CartSidebar: React.FC<{
             {cartItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
                 <div className="text-6xl mb-4">🛒</div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Your cart is empty</h3>
-                <p className="text-gray-500 mb-6">Add some products to get started!</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  Your cart is empty
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Add some products to get started!
+                </p>
                 <button
                   onClick={onClose}
                   className="px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-gray-900 transition-colors"
@@ -78,21 +121,31 @@ const CartSidebar: React.FC<{
 
                     {/* Product Info */}
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-gray-900 truncate">{item.name}</h4>
-                      <p className="text-sm text-gray-600 font-semibold">${item.price.toFixed(2)}</p>
+                      <h4 className="font-bold text-gray-900 truncate">
+                        {item.name}
+                      </h4>
+                      <p className="text-sm text-gray-600 font-semibold">
+                        ${item.price.toFixed(2)}
+                      </p>
                     </div>
 
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-2 bg-white rounded-lg px-1 border-2 border-gray-200">
                       <button
-                        onClick={() => onUpdateQuantity(item.productId, item.quantity - 1)}
+                        onClick={() =>
+                          onUpdateQuantity(item.productId, item.quantity - 1)
+                        }
                         className="p-1.5 hover:bg-gray-100 rounded transition-colors"
                       >
                         <Minus size={14} />
                       </button>
-                      <span className="w-8 text-center font-bold text-sm">{item.quantity}</span>
+                      <span className="w-8 text-center font-bold text-sm">
+                        {item.quantity}
+                      </span>
                       <button
-                        onClick={() => onUpdateQuantity(item.productId, item.quantity + 1)}
+                        onClick={() =>
+                          onUpdateQuantity(item.productId, item.quantity + 1)
+                        }
                         className="p-1.5 hover:bg-gray-100 rounded transition-colors"
                       >
                         <Plus size={14} />
@@ -119,17 +172,52 @@ const CartSidebar: React.FC<{
               <div className="mb-4">
                 <div className="flex gap-2">
                   <div className="relative flex-1">
-                    <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                    <Tag
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      size={18}
+                    />
                     <input
                       type="text"
                       placeholder="Discount code"
+                      onChange={(e) => setCouponCode(e.target.value)}
                       className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-black transition-colors"
                     />
                   </div>
-                  <button className="px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-black transition-colors">
+                  <button
+                    onClick={async () => {
+                      setCouponError("");
+
+                      try {
+                        const res = await fetch("/api/validate-coupon", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ couponCode }),
+                        });
+
+                        const data = await res.json();
+
+                        if (data.valid) {
+                          setAppliedCoupon(couponCode);
+                          setDiscountAmount(subtotal * 0.1);
+                        } else {
+                          setDiscountAmount(0);
+                          setAppliedCoupon("");
+                          setCouponError("Coupon is invalid or already used");
+                        }
+                      } catch {
+                        setCouponError("Something went wrong. Try again.");
+                      }
+                    }}
+                    className="px-6 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-black transition-colors"
+                  >
                     Apply
                   </button>
                 </div>
+                {couponError && (
+                  <p className="text-sm text-red-600 mt-2 font-medium">
+                    {couponError}
+                  </p>
+                )}
               </div>
 
               {/* Totals */}
@@ -138,6 +226,12 @@ const CartSidebar: React.FC<{
                   <span>Subtotal</span>
                   <span className="font-semibold">${subtotal.toFixed(2)}</span>
                 </div>
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-red-600 font-semibold">
+                    <span>Coupon Discount (10%)</span>
+                    <span>- ${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-xl font-black text-gray-900 pt-2 border-t-2 border-gray-300">
                   <span>Total</span>
                   <span>${total.toFixed(2)}</span>
@@ -145,7 +239,10 @@ const CartSidebar: React.FC<{
               </div>
 
               {/* Checkout Button */}
-              <button className="w-full bg-black text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-900 transition-colors shadow-lg">
+              <button
+                onClick={handleCheckout}
+                className="w-full bg-black text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-900 transition-colors shadow-lg"
+              >
                 Proceed to Checkout
               </button>
             </div>

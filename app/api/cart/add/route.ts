@@ -1,4 +1,4 @@
-import { carts } from "../../../../lib/store";
+import { carts } from "@/lib/store";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -7,6 +7,6 @@ export async function POST(req: Request) {
   if (!carts[userId]) carts[userId] = [];
 
   carts[userId].push({ itemId, name, price, quantity });
-
+console.log(carts[userId],userId,'add-cart')
   return Response.json({ message: "Item added", cart: carts[userId] });
 }

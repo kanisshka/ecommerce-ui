@@ -79,7 +79,7 @@ const ProductCard: React.FC<{
           {product.image}
         </div>
         
-        {/* Quick Add Overlay */}
+        {/* Quick Add Overlay
         <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex items-end justify-center pb-6 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           <button
 onClick={() => onAddToCart(product)}            
@@ -88,7 +88,7 @@ className="bg-white text-black px-3 py-1 rounded-full font-bold flex items-cente
             <ShoppingCart size={18} />
             Quick Add
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Product Info */}
