@@ -22,10 +22,8 @@ interface Product {
 
 const ProductCard: React.FC<{
   product: Product;
-  isLiked: boolean;
-  onToggleLike: () => void;
-  onAddToCart: () => void;
-}> = ({ product, isLiked, onToggleLike, onAddToCart }) => {
+  onAddToCart: (product: Product) => void;
+}> = ({ product, onAddToCart }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const getBadgeStyles = (type: string) => {
@@ -84,8 +82,8 @@ const ProductCard: React.FC<{
         {/* Quick Add Overlay */}
         <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex items-end justify-center pb-6 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
           <button
-            onClick={onAddToCart}
-            className="bg-white text-black px-3 py-1 rounded-full font-bold flex items-center gap-2 hover:bg-gray-100 transform hover:scale-105 active:scale-95 transition-all shadow-xl border-2 border-black"
+onClick={() => onAddToCart(product)}            
+className="bg-white text-black px-3 py-1 rounded-full font-bold flex items-center gap-2 hover:bg-gray-100 transform hover:scale-105 active:scale-95 transition-all shadow-xl border-2 border-black"
           >
             <ShoppingCart size={18} />
             Quick Add
@@ -145,7 +143,7 @@ const ProductCard: React.FC<{
 
         {/* Add to Cart Button */}
         <button
-          onClick={onAddToCart}
+         onClick={() => onAddToCart(product)}
           className="w-full bg-black text-white py-2 rounded-2xl font-bold text-base hover:bg-gray-900 border-2 border-black transform hover:-translate-y-1 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-2xl"
         >
           <ShoppingCart size={20} />

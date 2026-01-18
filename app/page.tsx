@@ -3,10 +3,11 @@
 
 import React, { useState } from 'react';
 import { 
+  ShoppingCart,
   Zap, 
 } from 'lucide-react';
 import ProductCard from './components/ProductComponent'
-
+import CartSidebar from './components/SliderComponent';
 // Types
 interface Product {
   id: number;
@@ -101,27 +102,52 @@ const categories = ['All Products', 'Audio', 'Wearables', 'Accessories', 'Gaming
 
 // Main Products Page Component
 export default function ProductsPage() {
-  const [selectedCategory, setSelectedCategory] = useState('All Products');
-  const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
-  const [searchQuery, setSearchQuery] = useState('');
+  const [isCartOpen, setIsCartOpen] = useState(false);
+const [cart, setCart] = useState<any[]>([]);
+const totalCartItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  const toggleLike = (productId: number) => {
-    setLikedProducts(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) {
-        newSet.delete(productId);
-      } else {
-        newSet.add(productId);
-      }
-      return newSet;
-    });
+const userId = "u1"; // static for demo
+
+const handleAddToCart = async (product: Product) => {
+  const payload = {
+    userId,
+    itemId: product.id,
+    name: product.name,
+    price: product.price,
+    quantity: 1,
   };
 
-  const filteredProducts = products.filter(product => {
-    const matchesCategory = selectedCategory === 'All Products' || product.category === selectedCategory;
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+ try {
+    const res = await fetch("/api/cart/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    console.log("Cart Updated:", data);
+
+    alert(`${product.name} added to cart 🛒`);
+    setCart(prev => {
+  const existing = prev.find(i => i.productId === product.id);
+
+  if (existing) {
+    return prev.map(i =>
+      i.productId === product.id ? { ...i, quantity: i.quantity + 1 } : i
+    );
+  }
+
+  return [...prev, { productId: product.id, name: product.name, price: product.price, quantity: 1, image: product.image }];
+});
+
+  } catch (error) {
+    console.error("Failed to add to cart:", error);
+    alert("Something went wrong. Please try again.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-white">
@@ -147,26 +173,50 @@ export default function ProductsPage() {
                 <p className="text-gray-400 text-sm font-medium">Premium Technology</p>
               </div>
             </div>
+             {/* Cart Icon */}
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="relative bg-white/10 backdrop-blur-xl p-3 rounded-xl border border-white/20 hover:bg-white/20 transition-all shadow-xl group"
+            >
+              <ShoppingCart className="text-white" size={24} strokeWidth={2} />
+              {totalCartItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-white text-black text-xs font-black w-6 h-6 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                  {totalCartItems}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </div>
-
+<CartSidebar
+  isOpen={isCartOpen}
+  onClose={() => setIsCartOpen(false)}
+  cartItems={cart}
+  onUpdateQuantity={(id, qty) =>
+    setCart(prev =>
+      prev.map(item =>
+        item.productId === id ? { ...item, quantity: Math.max(qty, 1) } : item
+      )
+    )
+  }
+  onRemoveItem={(id) =>
+    setCart(prev => prev.filter(item => item.productId !== id))
+  }
+/>
       {/* Products Grid */}
       <div className="max-w-7xl mx-auto px-6 py-12">
        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filteredProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
-              isLiked={likedProducts.has(product.id)}
-              onToggleLike={() => toggleLike(product.id)}
-              onAddToCart={() => console.log('Add to cart:', product.id)}
+             onAddToCart={handleAddToCart}
             />
           ))}
         </div>
 
         {/* Empty State */}
-        {filteredProducts.length === 0 && (
+        {products.length === 0 && (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">No products found</h3>
