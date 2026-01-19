@@ -1,36 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+📖 Overview
 
-## Getting Started
+This project implements a basic e-commerce store where users can:
 
-First, run the development server:
+Browse products
 
-```bash
+Add items to cart
+
+Apply discount coupons
+
+Checkout and place orders
+
+It follows the assignment requirement that:
+
+Every n-th order generates a 10% discount coupon that can be applied once to the cart.
+
+Admin APIs are also implemented for generating coupons and viewing store statistics.
+
+🧠 Coupon Logic
+
+A new coupon is issued on every n-th successful order
+
+Coupon gives 10% off the entire order
+
+Coupon can be used only once
+
+Next coupon becomes available after the next n-th order
+
+Example when n = 2:
+
+Order #	Coupon Issued
+1	❌
+2	✅
+3	❌
+4	✅
+🧾 Features
+User Features
+
+Product listing page
+
+Add / update / remove cart items
+
+Apply discount coupon
+
+Checkout cart
+
+Cart resets after successful checkout
+
+Admin Features
+
+Generate coupon API
+
+View overall store statistics
+
+🗂️ API Endpoints
+🛍️ Cart APIs
+Add item to cart
+POST /api/cart/add
+
+Checkout cart
+POST /api/checkout
+
+
+Validates coupon and applies discount.
+
+🔧 Admin APIs
+Generate coupon
+POST /api/admin/generate-coupon
+
+Get store statistics
+GET /api/admin/stats
+
+
+Returns:
+
+Total orders
+
+Total items purchased
+
+Total purchase amount
+
+Total discount given
+
+List of issued coupons
+
+💾 Data Storage
+
+All data is stored in memory in:
+
+/lib/store.ts
+
+
+This includes:
+
+carts
+
+orders
+
+coupons
+
+global order counter
+
+No database is used, as per assignment instructions.
+
+🚀 Running the Project
+Install dependencies
+npm install
+
+Start the application
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+http://localhost:3000/
 
-## Learn More
+🧪 Running Unit Tests
+npm run test
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Tests include:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Cart functionality
 
-## Deploy on Vercel
+Coupon validation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Checkout behavior
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Admin stats response
+
+🧰 Tech Stack
+Layer	Technology
+Frontend	Next.js + React + TypeScript
+Backend APIs	Next.js API Routes
+Styling	Tailwind CSS
+Icons	Lucide React
+Testing	Jest
+
+📌 Notes
+
+Built as a take-home assessment
+Code is modular, commented, and easy to extend
+Data resets when the server restarts (intended)

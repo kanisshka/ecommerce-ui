@@ -4,8 +4,8 @@ export async function POST(req: Request) {
   const { userId, couponCode } = await req.json();
 
   const cart = carts[userId];
-console.log(cart,carts[userId],userId,'cart-clg')
-console.log("Store carts:", carts);
+  console.log(cart, carts[userId], userId, "cart-clg");
+  console.log("Store carts:", carts);
 
   if (!cart.length) {
     return Response.json({ message: "Cart empty" }, { status: 400 });
@@ -16,10 +16,13 @@ console.log("Store carts:", carts);
   let discount = 0;
 
   if (couponCode) {
-    const coupon = coupons.find(c => c.code === couponCode && !c.used);
+    const coupon = coupons.find((c) => c.code === couponCode && !c.used);
 
     if (!coupon) {
-      return Response.json({ message: "Invalid or already used coupon" }, { status: 400 });
+      return Response.json(
+        { message: "Invalid or already used coupon" },
+        { status: 400 },
+      );
     }
 
     discount = total * 0.1;
@@ -27,18 +30,24 @@ console.log("Store carts:", carts);
   }
 
   const finalAmount = total - discount;
-
-  orders.push({ userId, total, discount, finalAmount });
+ const totalItemsPurchased = cart.reduce((sum, item) => sum + item.quantity, 0);
+  orders.push({
+    userId,
+    totalItemsPurchased,
+    total,
+    discount,
+    finalAmount,
+  });
 
   carts[userId] = [];
-
+  console.log(orders, "orders");
   state.orderCount++;
 
   let newCoupon = null;
 
   if (state.orderCount % state.nthOrder === 0) {
     newCoupon = `DISC10-${state.orderCount}`;
-    coupons.push({ code: newCoupon, used: false });
+    coupons.push({ id: state.orderCount,  code: newCoupon, used: false });
   }
 
   return Response.json({

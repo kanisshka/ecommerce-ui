@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import ProductCard from './components/ProductComponent'
 import CartSidebar from './components/SliderComponent';
+import Link from 'next/link';
 // Types
 interface Product {
   id: number;
@@ -174,6 +175,7 @@ const handleAddToCart = async (product: Product) => {
               </div>
             </div>
              {/* Cart Icon */}
+             <div className='flex items-center gap-3'>
             <button
               onClick={() => setIsCartOpen(true)}
               className="relative bg-white/10 backdrop-blur-xl p-3 rounded-xl border border-white/20 hover:bg-white/20 transition-all shadow-xl group"
@@ -185,6 +187,11 @@ const handleAddToCart = async (product: Product) => {
                 </span>
               )}
             </button>
+            <Link href="/admin">
+  <button className="relative bg-white/10 backdrop-blur-xl p-3 rounded-xl border border-white/20 hover:bg-white/20 transition-all shadow-xl group text-white">
+    Admin
+  </button>
+</Link></div>
           </div>
         </div>
       </div>
@@ -202,6 +209,7 @@ const handleAddToCart = async (product: Product) => {
   onRemoveItem={(id) =>
     setCart(prev => prev.filter(item => item.productId !== id))
   }
+  onClearCart={() => setCart([])}
 />
       {/* Products Grid */}
       <div className="max-w-7xl mx-auto px-6 py-12">

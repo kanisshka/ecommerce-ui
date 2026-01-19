@@ -15,16 +15,17 @@ const CartSidebar: React.FC<{
   cartItems: CartItem[];
   onUpdateQuantity: (productId: number, quantity: number) => void;
   onRemoveItem: (productId: number) => void;
-}> = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveItem }) => {
+  onClearCart: () => void;
+}> = ({ isOpen, onClose, cartItems, onUpdateQuantity, onRemoveItem,onClearCart }) => {
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
-  const total = subtotal;
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
   const [couponError, setCouponError] = useState("");
+  const total = subtotal - discountAmount;
 
   const handleCheckout = async () => {
     const payload = {
@@ -41,13 +42,21 @@ const CartSidebar: React.FC<{
 
       const data = await res.json();
       console.log(data, "data");
-      alert(`Order placed! Final amount: ₹${data.finalAmount}`);
+      alert(`Order placed! Final amount: $${data.finalAmount}`);
 
       if (data.newCoupon) {
         alert(`🎉 You got a new coupon: ${data.newCoupon}`);
       }
 
-      onClose(); // close sidebar
+// 🔥 CLEAR EVERYTHING AFTER SUCCESS
+    onClearCart();        // clears cart
+    setCouponCode("");     // clears input
+    setAppliedCoupon("");  // resets applied coupon
+    setDiscountAmount(0);  // removes discount
+    setCouponError("");    // clears error UI
+
+    onClose();
+
     } catch (error) {
       alert("Checkout failed");
     }
@@ -137,9 +146,9 @@ const CartSidebar: React.FC<{
                         }
                         className="p-1.5 hover:bg-gray-100 rounded transition-colors"
                       >
-                        <Minus size={14} />
+                        <Minus size={14} className="text-black"/>
                       </button>
-                      <span className="w-8 text-center font-bold text-sm">
+                      <span className="w-8 text-center font-bold text-sm text-black">
                         {item.quantity}
                       </span>
                       <button
@@ -148,7 +157,7 @@ const CartSidebar: React.FC<{
                         }
                         className="p-1.5 hover:bg-gray-100 rounded transition-colors"
                       >
-                        <Plus size={14} />
+                        <Plus size={14} className="text-black" />
                       </button>
                     </div>
 
@@ -180,7 +189,7 @@ const CartSidebar: React.FC<{
                       type="text"
                       placeholder="Discount code"
                       onChange={(e) => setCouponCode(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-black transition-colors"
+                      className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-black transition-colors text-black"
                     />
                   </div>
                   <button
