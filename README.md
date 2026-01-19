@@ -1,143 +1,294 @@
-#📖 Overview
+<div align="center">
 
-This project implements a basic e-commerce store where users can:
+# 🛒 NovaTech E-Commerce Store
 
-Browse products
+### *A Premium Tech Store with Smart Coupon System*
 
-Add items to cart
+[Features](#-features) • [API Docs](#-api-endpoints) • [Installation](#-installation) • [Testing](#-testing)
 
-Apply discount coupons
+---
 
-Checkout and place orders
+</div>
 
-It follows the assignment requirement that:
+## 📖 Overview
 
-Every n-th order generates a 10% discount coupon that can be applied once to the cart.
+This project implements a **full-featured e-commerce store** where users can:
 
-Admin APIs are also implemented for generating coupons and viewing store statistics.
+- 🛍️ Browse premium tech products
+- 🛒 Add items to cart with real-time updates
+- 🎟️ Apply discount coupons at checkout
+- ✅ Complete orders with validation
 
-#🧠 Coupon Logic
+### 🎯 Core Concept
 
-A new coupon is issued on every n-th successful order
+> **Every n-th order generates a 10% discount coupon** that can be applied once to the entire cart.
 
-Coupon gives 10% off the entire order
+---
 
-Coupon can be used only once
+## 🧠 Coupon Logic
 
-Next coupon becomes available after the next n-th order
+<table>
+<tr>
+<td width="50%">
 
-Example when n = 2:
+### How It Works
 
-Order #	Coupon Issued
-1	❌
-2	✅
-3	❌
-4	✅
-🧾 Features
-User Features
+1. **Automatic Generation**: A new coupon is issued on every **n-th** successful order
+2. **Discount**: Coupon provides **10% off** the entire order
+3. **Single Use**: Each coupon can be used **only once**
+4. **Next Availability**: Next coupon becomes available after the next **n-th** order
 
-Product listing page
+</td>
+<td width="50%">
 
-Add / update / remove cart items
+### Example (when n = 2)
 
-Apply discount coupon
+| Order # | Coupon Issued |
+|---------|---------------|
+| 1️⃣ | ❌ |
+| **2️⃣** | **✅ SAVE10XXX** |
+| 3️⃣ | ❌ |
+| **4️⃣** | **✅ SAVE10YYY** |
 
-Checkout cart
+</td>
+</tr>
+</table>
 
-Cart resets after successful checkout
+---
 
-Admin Features
+## 🎨 Features
 
-Generate coupon API
+<table>
+<tr>
+<td width="50%" valign="top">
 
-View overall store statistics
+### 👤 User Features
 
-🗂️ API Endpoints
-🛍️ Cart APIs
-Add item to cart
-POST /api/cart/add
+```
+✨ Product Listing
+   └── Browse curated tech products
+   └── View ratings & reviews
+   └── Check stock availability
 
-Checkout cart
-POST /api/checkout
+🛒 Smart Cart System
+   └── Add / update quantities
+   └── Remove items instantly
+   └── Real-time price calculation
 
+🎟️ Coupon Management
+   └── Apply discount codes
+   └── Automatic validation
+   └── See discount breakdown
 
-Validates coupon and applies discount.
+💳 Seamless Checkout
+   └── Order validation
+   └── Discount application
+   └── Cart reset on success
+```
 
-🔧 Admin APIs
-Generate coupon
-POST /api/admin/generate-coupon
+</td>
+<td width="50%" valign="top">
 
-Get store statistics
-GET /api/admin/stats
+### 👨‍💼 Admin Features
 
+```
+🎁 Coupon Generation
+   └── Manual coupon creation
+   └── Automatic on nth order
+   └── Track usage status
 
-Returns:
+📊 Analytics Dashboard
+   └── Total orders & revenue
+   └── Items purchased count
+   └── Discount analytics
+   └── Coupon usage tracking
 
-Total orders
+📋 Coupon Management
+   └── View all issued coupons
+   └── Check availability status
+   └── Copy codes easily
+```
 
-Total items purchased
+</td>
+</tr>
+</table>
 
-Total purchase amount
+---
 
-Total discount given
+## 🗂️ API Endpoints
 
-List of issued coupons
+### 🛍️ **Cart APIs**
 
-💾 Data Storage
+<details>
+<summary><b>POST</b> <code>/api/cart/add</code> - Add item to cart</summary>
 
-All data is stored in memory in:
+Adds a product to the user's shopping cart or increments quantity if already present.
 
-/lib/store.ts
+</details>
 
+<details>
+<summary><b>POST</b> <code>/api/checkout</code> - Checkout cart</summary>
 
-This includes:
+Validates coupon code (if provided) and processes the order with discount applied.
 
-carts
+</details>
 
-orders
+---
 
-coupons
+### 👨‍💼 **Admin APIs**
 
-global order counter
+<details>
+<summary><b>POST</b> <code>/api/admin/generate-coupon</code> - Generate coupon</summary>
 
-No database is used, as per assignment instructions.
+Creates a new discount coupon (triggered automatically on nth order or manually by admin).
 
-🚀 Running the Project
-Install dependencies
+</details>
+
+<details>
+<summary><b>GET</b> <code>/api/admin/stats</code> - Get store statistics</summary>
+
+**Returns:**
+- 📦 Total orders placed
+- 🛒 Total items purchased
+- 💰 Total purchase amount
+- 🎟️ Total discount amount given
+- 📋 List of all issued coupons (with status)
+
+</details>
+
+---
+
+## 💾 Data Storage
+
+All data is stored **in-memory** using:
+
+```
+📁 /lib/store.ts
+```
+
+**Includes:**
+- 🛒 Shopping carts
+- 📦 Order history
+- 🎟️ Discount coupons
+- 🔢 Global order counter
+
+> ⚠️ **Note:** No database required as per assignment specifications. Data resets on server restart.
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+
+- Node.js 18+ installed
+- npm or yarn package manager
+
+### Quick Start
+
+```bash
+# 1️⃣ Install dependencies
 npm install
 
-Start the application
+# 2️⃣ Start development server
 npm run dev
 
+# 3️⃣ Open in browser
+# 🌐 http://localhost:3000
+```
 
-Open:
+---
 
-http://localhost:3000/
+## 🧪 Testing
 
-🧪 Running Unit Tests
+Run the comprehensive test suite:
+
+```bash
 npm run test
+```
 
+**Test Coverage:**
+- ✅ Cart functionality (add/update/remove)
+- ✅ Coupon validation logic
+- ✅ Checkout behavior
+- ✅ Admin statistics response
+- ✅ Order counter logic
 
-Tests include:
+---
 
-Cart functionality
+## 🧰 Tech Stack
 
-Coupon validation
+<div align="center">
 
-Checkout behavior
+| Layer | Technology |
+|:------|:-----------|
+| **Frontend** | Next.js + React + TypeScript |
+| **Backend APIs** | Next.js API Routes |
+| **Styling** | Tailwind CSS |
+| **Icons** | Lucide React |
+| **Testing** | Jest + React Testing Library |
+| **State Management** | React Hooks |
 
-Admin stats response
+</div>
 
-🧰 Tech Stack
-Layer	Technology
-Frontend	Next.js + React + TypeScript
-Backend APIs	Next.js API Routes
-Styling	Tailwind CSS
-Icons	Lucide React
-Testing	Jest
+---
 
-📌 Notes
+## 📁 Project Structure
 
-Built as a take-home assessment
-Code is modular, commented, and easy to extend
-Data resets when the server restarts (intended)
+```
+📦 ecommerce-store
+├── 📂 app/
+│   ├── 📂 /          # Product listing page
+│   ├── 📂 admin/             # Admin dashboard
+│   └── 📂 api/               # API routes
+│       ├── cart/
+│       ├── checkout/
+│       └── admin/
+├── 📂 components/            # Reusable UI components
+├── 📂 lib/
+│   └── store.ts              # In-memory data store
+├── 📂 __tests__/             # Unit tests
+└── 📄 README.md
+```
+
+---
+
+## 🎯 Key Highlights
+
+<div align="center">
+
+| Feature | Description |
+|:--------|:------------|
+| 🎨 **Premium UI** | Black & white minimalist design |
+| ⚡ **Real-time Updates** | Instant cart synchronization |
+| 🔒 **Validation** | Coupon and stock validation |
+| 📱 **Responsive** | Mobile-first design approach |
+| 🧪 **Well-tested** | Comprehensive unit tests |
+| 📝 **Type-safe** | Full TypeScript coverage |
+
+</div>
+
+---
+
+## 📌 Notes
+
+- 📋 Built as a **take-home assessment**
+- 🧩 Code is **modular**, **commented**, and **easy to extend**
+- 🔄 Data resets when server restarts *(intentional for in-memory store)*
+- 🎨 Follows modern **Next.js 14** best practices
+- ✨ Clean code with **separation of concerns**
+
+---
+
+<div align="center">
+
+### 💡 Questions or Feedback?
+
+Feel free to reach out or open an issue!
+
+**Made with ❤️ using Next.js & TypeScript**
+
+---
+
+⭐ *If you found this project helpful, consider giving it a star!*
+
+</div>
