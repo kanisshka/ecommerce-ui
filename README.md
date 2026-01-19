@@ -1,4 +1,4 @@
-📖 Overview
+#📖 Overview
 
 This project implements a basic e-commerce store where users can:
 
@@ -16,7 +16,7 @@ Every n-th order generates a 10% discount coupon that can be applied once to the
 
 Admin APIs are also implemented for generating coupons and viewing store statistics.
 
-🧠 Coupon Logic
+#🧠 Coupon Logic
 
 A new coupon is issued on every n-th successful order
 
