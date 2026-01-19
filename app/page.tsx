@@ -1,6 +1,6 @@
 // app/products/page.tsx
 'use client';
-
+import toast from "react-hot-toast";
 import React, { useState } from 'react';
 import { 
   ShoppingCart,
@@ -131,7 +131,8 @@ const handleAddToCart = async (product: Product) => {
 
     console.log("Cart Updated:", data);
 
-    alert(`${product.name} added to cart 🛒`);
+    // alert(`${product.name} added to cart 🛒`);
+    toast.success(`${product.name} added to cart 🛒`);
     setCart(prev => {
   const existing = prev.find(i => i.productId === product.id);
 
@@ -146,7 +147,8 @@ const handleAddToCart = async (product: Product) => {
 
   } catch (error) {
     console.error("Failed to add to cart:", error);
-    alert("Something went wrong. Please try again.");
+    // alert("Something went wrong. Please try again.");
+    toast.error(`${product.name} not added to cart 🛒, Try Again!`);
   }
 };
 

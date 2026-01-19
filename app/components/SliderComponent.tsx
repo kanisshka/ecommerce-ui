@@ -7,7 +7,9 @@ interface CartItem {
   quantity: number;
   image: string;
 }
+import { useRouter } from "next/navigation";
 
+import toast from "react-hot-toast";
 // Cart Sidebar Component
 const CartSidebar: React.FC<{
   isOpen: boolean;
@@ -26,41 +28,46 @@ const CartSidebar: React.FC<{
   const [discountAmount, setDiscountAmount] = useState(0);
   const [couponError, setCouponError] = useState("");
   const total = subtotal - discountAmount;
+const router = useRouter();
 
-  const handleCheckout = async () => {
-    const payload = {
-      userId: "u1",
-      couponCode: appliedCoupon,
-    };
+//   const handleCheckout = async () => {
+//     const payload = {
+//       userId: "u1",
+//       couponCode: appliedCoupon,
+//     };
 
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+//     try {
+//       const res = await fetch("/api/checkout", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify(payload),
+//       });
 
-      const data = await res.json();
-      console.log(data, "data");
-      alert(`Order placed! Final amount: $${data.finalAmount}`);
+//       const data = await res.json();
+//       console.log(data, "data");
+//       // alert(`Order placed! Final amount: $${data.finalAmount}`);
+//       toast.success(`Order placed! Final amount: $${data.finalAmount}`);
 
-      if (data.newCoupon) {
-        alert(`🎉 You got a new coupon: ${data.newCoupon}`);
-      }
+//       if (data.newCoupon) {
+//         // alert(`🎉 You got a new coupon: ${data.newCoupon}`);
+//          toast.success(`You got a new coupon: ${data.newCoupon}`);
+//       }
 
-// 🔥 CLEAR EVERYTHING AFTER SUCCESS
-    onClearCart();        // clears cart
-    setCouponCode("");     // clears input
-    setAppliedCoupon("");  // resets applied coupon
-    setDiscountAmount(0);  // removes discount
-    setCouponError("");    // clears error UI
+// // 🔥 CLEAR EVERYTHING AFTER SUCCESS
+//     onClearCart();        // clears cart
+//     setCouponCode("");     // clears input
+//     setAppliedCoupon("");  // resets applied coupon
+//     setDiscountAmount(0);  // removes discount
+//     setCouponError("");    // clears error UI
 
-    onClose();
+//     onClose();
 
-    } catch (error) {
-      alert("Checkout failed");
-    }
-  };
+//     } catch (error) {
+//       // alert("Checkout failed");
+//       toast.error(`Checkout failed`);
+
+//     }
+//   };
 
   return (
     <>
@@ -178,7 +185,7 @@ const CartSidebar: React.FC<{
           {cartItems.length > 0 && (
             <div className="border-t-2 border-gray-200 p-6 bg-gray-50">
               {/* Discount Code */}
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <Tag
@@ -227,7 +234,7 @@ const CartSidebar: React.FC<{
                     {couponError}
                   </p>
                 )}
-              </div>
+              </div> */}
 
               {/* Totals */}
               <div className="space-y-2 mb-4">
@@ -249,7 +256,10 @@ const CartSidebar: React.FC<{
 
               {/* Checkout Button */}
               <button
-                onClick={handleCheckout}
+               onClick={() => {
+    localStorage.setItem("cart", JSON.stringify(cartItems)); // save cart
+    window.location.href = "/checkout"; // go to checkout page
+  }}
                 className="w-full bg-black text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-900 transition-colors shadow-lg"
               >
                 Proceed to Checkout
